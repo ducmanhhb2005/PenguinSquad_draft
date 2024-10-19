@@ -1,7 +1,13 @@
 package com.penguinsquad.userinterface;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.IOException;
+
 import javax.swing.JFrame;
+
+import com.penguinsquad.effect.CacheDataLoader;
+
+
 
 public class GameFrame extends JFrame {
     
@@ -10,10 +16,18 @@ public class GameFrame extends JFrame {
     
     GamePanel gamePanel;
     
-    public GameFrame(){
+    public GameFrame() throws IOException{
         Toolkit toolkit = this.getToolkit();
         Dimension dimension = toolkit.getScreenSize();
         this.setBounds((dimension.width - SCREEN_WIDTH)/2,(dimension.height- SCREEN_HEIGHT)/2, SCREEN_WIDTH, SCREEN_HEIGHT);
+        
+        CacheDataLoader.getInstance().LoadData();
+        
+        try {
+        	CacheDataLoader.getInstance().LoadData();
+        }catch (IOException ex) {
+        	ex.printStackTrace();
+        }
         
         gamePanel = new GamePanel();
         add(gamePanel);
@@ -24,7 +38,7 @@ public class GameFrame extends JFrame {
     public void startGame(){
         gamePanel.startGame();
     }
-    public static void main(String args[]){
+    public static void main(String args[]) {
         GameFrame gameFrame = new GameFrame();
         gameFrame.setVisible(true);
         gameFrame.startGame();

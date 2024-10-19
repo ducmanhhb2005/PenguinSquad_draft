@@ -1,6 +1,11 @@
 package com.penguinsquad.userinterface;
 import com.penguinsquad.effect.Animation;
+import com.penguinsquad.effect.CacheDataLoader;
 import com.penguinsquad.effect.FrameImage;
+import com.penguinsquad.object.GameWorld;
+import com.penguinsquad.object.MegaMan;
+import com.penguinsquad.object.PhysicalMap;
+
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -21,19 +26,50 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     private boolean isRunning;
     
     private InputManager inputManager;
-        
+    private BufferedImage bufImage;
+    private Graphics2D  bufG2D;
+    public GameWorld gameWorld;
+   // FrameImage frame1;
+    
+  //  Animation anim1;
+    //MegaMan megaman = new MegaMan(300,300,100,100,0.1f);
+    //PhysicalMap physicalMap = new PhysicalMap(0,0);
     public GamePanel(){
-        inputManager = new InputManager();
-                    
+    	gameWorld = new GameWorld();   	
+        inputManager = new InputManager(gameWorld);
+        //frame1 = CacheDataLoader.getInstance().getFrameImage("idle?");
+       // anim1 = CacheDataLoader.getInstance().getAnimation("idle??");
+       // anim1.flipAllImage(); //quay nguoc anh
+        bufImage = new BufferedImage(GameFrame.SCREEN_WIDTH, GameFrame.SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+       
     }
     
     @Override
     public void paint(Graphics g) {
-        g.setColor(Color.BLACK);
-        g.fillRect(0 , 0, GameFrame.SCREEN_WIDTH, GameFrame.SCREEN_HEIGHT);
-                
+       g.drawImage(bufImage,0 ,0 ,this);
+        
+       // Graphics2D g2 = (Graphics2D) g;
+     //   frame1.draw(g2, 130, 130);
+       // anim1.draw(300,300,g2);
     }
     
+    public void UpdateGame() {
+    	gameWorld.Update();
+    	//megaman.update();
+    }
+    public void RenderGame() {
+    	if (bufImage == null) bufImage =  new BufferedImage(GameFrame.SCREEN_WIDTH, GameFrame.SCREEN_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+    if (bufImage != null) bufG2D = (Graphics2D) bufImage.getGraphics();
+    if (bufG2D != null) {  bufG2D.setColor(Color.BLACK);
+    bufG2D.fillRect(0 , 0, GameFrame.SCREEN_WIDTH, GameFrame.SCREEN_HEIGHT);
+    // ve objects game
+    //megaman.draw(bufG2D);
+   // physicalMap.draw(bufG2D);
+    gameWorld.Render(bufG2D);
+    //bufG2D.setColor(Color.red);
+    //bufG2D.fillRect(40, 50, 100, 100);	
+    }
+    }
     public void startGame(){
         if(thread == null){
             isRunning = true;
@@ -54,9 +90,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
         
         while(isRunning){
                        
-                //Update
-                //Render
-                
+                UpdateGame();
+                RenderGame();
+         //   anim1.Update(System.nanoTime());
             repaint(); 
             long deltaTime = System.nanoTime() - beginTime;
             sleepTime = period - deltaTime;
@@ -85,4 +121,3 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
     
     }
 }
-
